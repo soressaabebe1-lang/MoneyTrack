@@ -1,0 +1,13 @@
+# Python / Flask
+__pycache__/
+*.pyc
+instance/
+*.db
+*.sqlite3
+.env
+venv/
+
+# Flutter / Build files
+Frontend/.dart_tool/
+Frontend/.build/
+Frontend/build/
