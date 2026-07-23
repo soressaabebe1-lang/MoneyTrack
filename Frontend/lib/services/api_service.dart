@@ -9,7 +9,7 @@ import '../models/transaction_model.dart';
 /// (e.g. your Render URL) or `http://10.0.2.2:5000` for
 /// the Android emulator talking to a local Flask server.
 class ApiService {
-  ApiService({this.baseUrl = 'http://10.0.2.2:5000'});
+  ApiService({this.baseUrl = 'https://moneytrack-ztqj.onrender.com'});
 
   final String baseUrl;
 
