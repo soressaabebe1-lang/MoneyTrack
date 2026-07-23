@@ -11,11 +11,13 @@ class AddTransactionScreen extends StatefulWidget {
     required this.apiService,
     required this.isIncome,
     this.transaction,
+    this.refreshNotifier,
   });
 
   final ApiService apiService;
   final bool isIncome;
   final TransactionModel? transaction;
+  final ValueNotifier<int>? refreshNotifier;
 
   @override
   State<AddTransactionScreen> createState() => _AddTransactionScreenState();
@@ -81,6 +83,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       } else {
         await widget.apiService.createTransaction(tx);
       }
+      widget.refreshNotifier?.value++;
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       setState(() {
@@ -157,6 +160,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
 
     try {
       await widget.apiService.deleteTransaction(widget.transaction!.id!);
+      widget.refreshNotifier?.value++;
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (!mounted) return;

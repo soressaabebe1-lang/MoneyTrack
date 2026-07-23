@@ -58,7 +58,14 @@ class RootShell extends StatefulWidget {
 
 class _RootShellState extends State<RootShell> {
   final ApiService _apiService = ApiService();
+  final ValueNotifier<int> _refreshNotifier = ValueNotifier<int>(0);
   int _selectedIndex = 0;
+
+  @override
+  void dispose() {
+    _refreshNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,14 +73,17 @@ class _RootShellState extends State<RootShell> {
       DashboardScreen(
         apiService: _apiService,
         onToggleTheme: widget.onToggleTheme,
+        refreshNotifier: _refreshNotifier,
       ),
       CategoryBreakdownScreen(
         apiService: _apiService,
         onToggleTheme: widget.onToggleTheme,
+        refreshNotifier: _refreshNotifier,
       ),
       TransactionHistoryScreen(
         apiService: _apiService,
         onToggleTheme: widget.onToggleTheme,
+        refreshNotifier: _refreshNotifier,
       ),
     ];
 

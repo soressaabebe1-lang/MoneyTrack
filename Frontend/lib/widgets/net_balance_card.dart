@@ -20,6 +20,9 @@ class NetBalanceCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final netBalance = totalIncome - totalExpenses;
     final fmt = currencyFormat ?? NumberFormat.currency(symbol: '\$');
+    final balanceColor = netBalance < 0
+        ? AppColors.expenseRed
+        : AppColors.incomeGreen;
 
     return Container(
       width: double.infinity,
@@ -56,8 +59,8 @@ class NetBalanceCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             fmt.format(netBalance),
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: balanceColor,
               fontSize: 34,
               fontWeight: FontWeight.w800,
               letterSpacing: -0.5,

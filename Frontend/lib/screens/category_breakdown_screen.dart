@@ -52,10 +52,12 @@ class CategoryBreakdownScreen extends StatefulWidget {
   const CategoryBreakdownScreen({
     super.key,
     required this.apiService,
+    required this.refreshNotifier,
     this.onToggleTheme,
   });
 
   final ApiService apiService;
+  final ValueNotifier<int> refreshNotifier;
   final VoidCallback? onToggleTheme;
 
   @override
@@ -72,7 +74,14 @@ class _CategoryBreakdownScreenState extends State<CategoryBreakdownScreen> {
   @override
   void initState() {
     super.initState();
+    widget.refreshNotifier.addListener(_refresh);
     _future = widget.apiService.getTransactions();
+  }
+
+  @override
+  void dispose() {
+    widget.refreshNotifier.removeListener(_refresh);
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -117,17 +126,6 @@ class _CategoryBreakdownScreenState extends State<CategoryBreakdownScreen> {
       return hash & 0x7fffffff;
     });
     return _breakdownColorPalette[hash % _breakdownColorPalette.length];
-  }
-
-  IconData _iconForLabel(String label) {
-    switch (_selectedGroupBy) {
-      case BreakdownGroupBy.reason:
-        return categoryStyleFor(label).icon;
-      case BreakdownGroupBy.name:
-        return Icons.person_rounded;
-      case BreakdownGroupBy.day:
-        return Icons.calendar_today_rounded;
-    }
   }
 
   @override

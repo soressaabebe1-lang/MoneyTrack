@@ -11,10 +11,12 @@ class TransactionHistoryScreen extends StatefulWidget {
   const TransactionHistoryScreen({
     super.key,
     required this.apiService,
+    required this.refreshNotifier,
     this.onToggleTheme,
   });
 
   final ApiService apiService;
+  final ValueNotifier<int> refreshNotifier;
   final VoidCallback? onToggleTheme;
 
   @override
@@ -27,20 +29,27 @@ class _TransactionHistoryScreenState extends State<TransactionHistoryScreen> {
   @override
   void initState() {
     super.initState();
+    widget.refreshNotifier.addListener(_refresh);
     _future = _load();
   }
 
+  @override
+  void dispose() {
+    widget.refreshNotifier.removeListener(_refresh);
+    super.dispose();
+  }
+
   Future<void> _openEditSheet(TransactionModel transaction) async {
-    final created = await Navigator.of(context).push<bool>(
+    await Navigator.of(context).push<bool>(
       MaterialPageRoute(
         builder: (_) => AddTransactionScreen(
           apiService: widget.apiService,
           isIncome: transaction.isIncome,
           transaction: transaction,
+          refreshNotifier: widget.refreshNotifier,
         ),
       ),
     );
-    if (created == true) _refresh();
   }
 
   Future<List<TransactionModel>> _load() async {

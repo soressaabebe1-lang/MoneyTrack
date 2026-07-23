@@ -13,10 +13,12 @@ class DashboardScreen extends StatefulWidget {
   const DashboardScreen({
     super.key,
     required this.apiService,
+    required this.refreshNotifier,
     this.onToggleTheme,
   });
 
   final ApiService apiService;
+  final ValueNotifier<int> refreshNotifier;
   final VoidCallback? onToggleTheme;
 
   @override
@@ -33,7 +35,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    widget.refreshNotifier.addListener(_refresh);
     _future = _load();
+  }
+
+  @override
+  void dispose() {
+    widget.refreshNotifier.removeListener(_refresh);
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<_DashboardData> _load() async {
@@ -93,16 +103,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         );
       });
     } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _searchError = e.toString();
-        _searchResult = null;
-      });
+      if (mounted) {
+        setState(() {
+          _searchError = e.toString();
+          _searchResult = null;
+        });
+      }
     } finally {
-      if (!mounted) return;
-      setState(() {
-        _searchLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _searchLoading = false;
+        });
+      }
     }
   }
 
@@ -112,10 +124,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
         builder: (_) => AddTransactionScreen(
           apiService: widget.apiService,
           isIncome: isIncome,
+          refreshNotifier: widget.refreshNotifier,
         ),
       ),
     );
-    if (created == true) _refresh();
+    if (created == true && _searchController.text.trim().isNotEmpty) {
+      await _searchByName();
+    }
   }
 
   Future<void> _openEditSheet(TransactionModel transaction) async {
@@ -125,14 +140,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           apiService: widget.apiService,
           isIncome: transaction.isIncome,
           transaction: transaction,
+          refreshNotifier: widget.refreshNotifier,
         ),
       ),
     );
-    if (created == true) {
-      _refresh();
-      if (_searchController.text.trim().isNotEmpty) {
-        await _searchByName();
-      }
+    if (created == true && _searchController.text.trim().isNotEmpty) {
+      await _searchByName();
     }
   }
 
